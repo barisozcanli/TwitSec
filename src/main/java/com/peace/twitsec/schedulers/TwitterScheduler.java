@@ -11,8 +11,8 @@ public class TwitterScheduler {
     @Autowired
     private SchedulerService schedulerService;
 
-    // 5 dakikada 1 çalışacak
-    @Scheduled(fixedDelay = 5 * 60 * 1000 )
+    // 1 dakikada 1 çalışacak
+    @Scheduled(fixedDelay = 1 * 60 * 1000 )
     public void checkFollowers() {
 
         schedulerService.checkNewOldFollowers();
