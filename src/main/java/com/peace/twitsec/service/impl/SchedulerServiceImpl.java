@@ -52,8 +52,11 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 			System.out.println("Followers for " + user.getUsername() + " :" + followersList);
 
-			checkFollower(user, followersList);
+			try {
+				checkFollower(user, followersList);
+			} catch(Exception e) {
 
+			}
 			user.setFollowers(followersList);
 
 			userRepository.save(user);
@@ -82,6 +85,10 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("FOLLOWED : " + report);
 		}
 
+		//TODO NEW FOLLOWERS için notification veya mesaj gönderimi
+		twitterService.sendDirectMessage(user, newFollowers, "welcome auto message");
+
+
 		for(Follower leftFollower: leftFollowers) {
 			FollowerReport report = new FollowerReport();
 			report.setTwitterId(leftFollower.getTwitterId());
@@ -93,6 +100,8 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 			System.out.println("UNFOLLOWED : " + report);
 		}
+
+		//TODO LEFT FOLLOWERS için notification ve mesaj gönderimi
 
 		if(followerReportList.size() > 0) {
 			twitterReportService.createFollowerReports(followerReportList);

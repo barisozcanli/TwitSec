@@ -1,6 +1,7 @@
 package com.peace.twitsec.service.impl;
 
 
+import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.TwitterService;
@@ -27,7 +28,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 		long[] ids = new long[0];
 		try {
-			ids = twitter.getFriendsIDs(-1).getIDs();
+			ids = twitter.getFollowersIDs(-1).getIDs();
 		} catch (TwitterException e) {
 			//TODO handle this
 			e.printStackTrace();
@@ -37,6 +38,29 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 			followerIds.add(ids[i]);
 		}
 		return followerIds;
+	}
+
+	public void sendDirectMessage(User user, long userId, String message) {
+		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
+		try {
+			twitter.sendDirectMessage(userId, message);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void sendDirectMessage(User user, List<Follower> followerList, String message) {
+		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
+
+		for (Follower follower : followerList) {
+			try {
+				twitter.sendDirectMessage(follower.getTwitterId(), message);
+
+				System.out.println("MESSAGE SENT | from : " + user.getUsername() + ", to twitterId :  " + follower.getTwitterId() + ", message : " + message);
+			} catch (TwitterException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	// FIXME
