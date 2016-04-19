@@ -19,11 +19,8 @@ public class User extends BaseEntity{
     @Field("username")
     private String username;
 
-    @Field("firstname")
-    private String firstname;
-
-    @Field("lastname")
-    private String lastname;
+    @Field("email")
+    private String email;
 
     @Field("password")
     private String password;

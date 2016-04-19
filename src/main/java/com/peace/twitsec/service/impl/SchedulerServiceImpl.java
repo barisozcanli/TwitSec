@@ -6,10 +6,7 @@ import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.FollowerReport;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.repository.UserRepository;
-import com.peace.twitsec.service.SchedulerService;
-import com.peace.twitsec.service.TwitSecService;
-import com.peace.twitsec.service.FollowerReportService;
-import com.peace.twitsec.service.TwitterService;
+import com.peace.twitsec.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +29,9 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 	@Autowired
 	private FollowerReportService twitterReportService;
+
+	@Autowired
+	private MailService mailService;
 
 	@Override
 	public void checkNewOldFollowers() {
@@ -99,9 +99,14 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			followerReportList.add(report);
 
 			System.out.println("UNFOLLOWED : " + report);
+
+
+			//TODO LEFT FOLLOWERS için notification ve mesaj gönderimi
+			mailService.sendMail(user.getEmail(), "TwitSec Unfollower Notification", "Unfollowed : " + leftFollower.getTwitterId());
 		}
 
-		//TODO LEFT FOLLOWERS için notification ve mesaj gönderimi
+
+
 
 		if(followerReportList.size() > 0) {
 			twitterReportService.createFollowerReports(followerReportList);

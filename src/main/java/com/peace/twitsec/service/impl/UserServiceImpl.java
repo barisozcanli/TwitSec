@@ -42,8 +42,7 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 
 		User newUser = new User();
 
-		newUser.setFirstname(request.getFirstname());
-		newUser.setLastname(request.getLastname());
+		newUser.setEmail(request.getEmail());
 		newUser.setPassword(request.getPassword());
 		newUser.setUsername(request.getUsername());
 

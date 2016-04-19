@@ -67,40 +67,4 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 		
 		return user != null;
 	}
-
-	@Override
-	public List<User> searchUser(String queryString) {
-		
-		Pattern regex = Pattern.compile("(?i)"+queryString); 
-		
-		DBObject clause1 = new BasicDBObject("firstname", regex);  
-		DBObject clause2 = new BasicDBObject("lastname", regex);    
-		BasicDBList or = new BasicDBList();
-		or.add(clause1);
-		or.add(clause2);
-		DBObject query = new BasicDBObject("$or", or);
-		
-		DBCollection userCollection = mongoTemplate.getCollection("users");
-		DBCursor cursor = userCollection.find(query);
-		
-		List<User> userList = new ArrayList<User>();
-		while (cursor.hasNext()) {
-			BasicDBObject user = (BasicDBObject)cursor.next();
-			String firstname = user.getString("firstname");
-			String lastname = user.getString("lastname");
-			String userId = user.getString("_id");
-			String username = user.getString("username");
-			
-			User u = new User();
-			u.setFirstname(firstname);
-			u.setId(userId);
-			u.setLastname(lastname);
-			u.setUsername(username);
-			
-			userList.add(u);
-		}
-		cursor.close();
-		
-		return userList;
-	}
 }

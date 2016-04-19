@@ -15,7 +15,4 @@ public interface UserRepositoryCustom {
     User findByOneTimeToken(String oneTimeToken);
     
     boolean deleteUser(String username);
-    
-    List<User> searchUser(String queryString);
-
 }
