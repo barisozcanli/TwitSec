@@ -24,7 +24,7 @@ public class TwitterUtil {
 
         //FIXME for the first run of the scheduler, it shouldn't recognize the followers as new
         if(oldFollowerList.size() == 0)
-            return newFollowerList;
+            return newFollowers;
 
         for (Follower follower : newFollowerList) {
             if(!oldFollowerList.contains(follower)) {
