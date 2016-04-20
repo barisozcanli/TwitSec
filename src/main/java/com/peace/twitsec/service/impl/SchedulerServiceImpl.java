@@ -85,6 +85,7 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("FOLLOWED : " + report);
 		}
 
+		//TODO check follower counts
 		if(user.getPreferences().isSendAutoMessageToNewFollower()) {
 			twitterService.sendDirectMessage(user, newFollowers, user.getPreferences().getNewFollowerAutoMessageContent());
 		}
@@ -102,8 +103,12 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("UNFOLLOWED : " + report);
 
 
-			//TODO LEFT FOLLOWERS için notification ve mesaj gönderimi
-			mailService.sendMail(user.getEmail(), "TwitSec Unfollower Notification", "Unfollowed : " + leftFollower.getTwitterId());
+			// LEFT FOLLOWERS için notification ve mesaj gönderimi
+			//TODO follower count'lar kontrol edilecek
+			System.out.println("user.getPreferences().isWarnWithEmail() : " + user.getPreferences().isWarnWithEmail());
+			if(user.getPreferences().isWarnWithEmail()) {
+				mailService.sendMail(user.getEmail(), "TwitSec Unfollower Notification", "Unfollowed : " + leftFollower.getTwitterId());
+			}
 		}
 
 
