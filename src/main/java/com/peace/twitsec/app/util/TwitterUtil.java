@@ -21,6 +21,11 @@ public class TwitterUtil {
 
     public static List<Follower> checkNewFollowers(List<Follower> oldFollowerList, List<Follower> newFollowerList) {
         List<Follower> newFollowers = new ArrayList<Follower>();
+
+        //FIXME for the first run of the scheduler, it shouldn't recognize the followers as new
+        if(oldFollowerList.size() == 0)
+            return newFollowerList;
+
         for (Follower follower : newFollowerList) {
             if(!oldFollowerList.contains(follower)) {
                 newFollowers.add(follower);
