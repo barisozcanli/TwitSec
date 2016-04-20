@@ -103,16 +103,16 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("UNFOLLOWED : " + report);
 
 
-			// LEFT FOLLOWERS için notification ve mesaj gönderimi
-			//TODO follower count'lar kontrol edilecek
+			// Notify user and mention follower name of unfollower user
+			//TODO check follower counts. twitter profile needed
 			System.out.println("user.getPreferences().isWarnWithEmail() : " + user.getPreferences().isWarnWithEmail());
 			if(user.getPreferences().isWarnWithEmail()) {
 				mailService.sendMail(user.getEmail(), "TwitSec Unfollower Notification", "Unfollowed : " + leftFollower.getTwitterId());
 			}
+
+			//TODO mention user on a tweet
+			//twitter profile needed
 		}
-
-
-
 
 		if(followerReportList.size() > 0) {
 			twitterReportService.createFollowerReports(followerReportList);
