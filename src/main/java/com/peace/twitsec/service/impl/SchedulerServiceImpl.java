@@ -53,7 +53,8 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("Followers for " + user.getUsername() + " :" + followersList);
 
 			try {
-				checkFollower(user, followersList);
+				//user's new followers are fetched. They will be compared with the old ones
+				checkNewAndOldFollowers(user, followersList);
 			} catch(Exception e) {
 
 			}
@@ -61,10 +62,9 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 			userRepository.save(user);
 		}
-
 	}
 
-	private void checkFollower(User user, List<Follower> newFollowerList) {
+	private void checkNewAndOldFollowers(User user, List<Follower> newFollowerList) {
 		List<Follower> newFollowers = TwitterUtil.checkNewFollowers(user.getFollowers(), newFollowerList);
 
 		List<Follower> leftFollowers = TwitterUtil.checkLeftFollowers(user.getFollowers(), newFollowerList);
@@ -85,8 +85,9 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("FOLLOWED : " + report);
 		}
 
-		//TODO NEW FOLLOWERS için notification veya mesaj gönderimi
-		twitterService.sendDirectMessage(user, newFollowers, "welcome auto message");
+		if(user.getPreferences().isSendAutoMessageToNewFollower()) {
+			twitterService.sendDirectMessage(user, newFollowers, user.getPreferences().getNewFollowerAutoMessageContent());
+		}
 
 
 		for(Follower leftFollower: leftFollowers) {

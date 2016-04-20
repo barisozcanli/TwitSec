@@ -4,6 +4,7 @@ import com.peace.twitsec.app.common.ErrorCode;
 import com.peace.twitsec.app.exception.TwitSecRuntimeException;
 import com.peace.twitsec.data.mongo.model.Token;
 import com.peace.twitsec.data.mongo.model.User;
+import com.peace.twitsec.data.mongo.model.UserPreferences;
 import com.peace.twitsec.data.mongo.repository.UserRepository;
 import com.peace.twitsec.http.request.CreateUserRequest;
 import com.peace.twitsec.service.TwitSecService;
@@ -45,6 +46,17 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		newUser.setEmail(request.getEmail());
 		newUser.setPassword(request.getPassword());
 		newUser.setUsername(request.getUsername());
+
+		UserPreferences preferences = new UserPreferences();
+		preferences.setGoodByeTweetContent("Bye!");
+		preferences.setLeftFollowerFollowerCount(0);
+		preferences.setNewFollowerFollowerCount(0);
+		preferences.setMentionOldFollowerInTweet(false);
+		preferences.setSendAutoMessageToNewFollower(false);
+		preferences.setNewFollowerAutoMessageContent("Welcome!");
+		preferences.setWarnWithEmail(false);
+
+		newUser.setPreferences(preferences);
 
 		Token token = new Token();
 		token.setAccessToken(request.getAccessToken());

@@ -29,6 +29,8 @@ public class User extends BaseEntity{
 
     private List<Follower> followers;
 
+    private UserPreferences preferences;
+
 	public User(){
 	}
 }
