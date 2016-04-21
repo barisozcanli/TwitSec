@@ -7,6 +7,7 @@ import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.TwitterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
@@ -14,11 +15,20 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 @Service
 public class TwitterServiceImpl extends TwitSecService implements TwitterService {
+
+	@Value("${twitter.oauth.consumer.key}")
+	private String consumerKey;
+
+	@Value("${twitter.oauth.consumer.secret}")
+	private String consumerSecret;
+
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -103,8 +113,8 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 	private Twitter getTwitterInstance(String OAuthAccessToken, String OAuthAccessTokenSecret) {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 		cb.setDebugEnabled(true)
-				.setOAuthConsumerKey("consumerkeyhere")
-				.setOAuthConsumerSecret("consumersecrethere")
+				.setOAuthConsumerKey(consumerKey)
+				.setOAuthConsumerSecret(consumerSecret)
 				.setOAuthAccessToken(OAuthAccessToken)
 				.setOAuthAccessTokenSecret(OAuthAccessTokenSecret);
 		TwitterFactory tf = new TwitterFactory(cb.build());
