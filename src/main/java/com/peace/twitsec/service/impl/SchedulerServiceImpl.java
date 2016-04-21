@@ -85,11 +85,9 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("FOLLOWED : " + report);
 		}
 
-		//TODO check follower counts
 		if(user.getPreferences().isSendAutoMessageToNewFollower()) {
 			twitterService.sendDirectMessage(user, newFollowers, user.getPreferences().getNewFollowerAutoMessageContent());
 		}
-
 
 		for(Follower leftFollower: leftFollowers) {
 			FollowerReport report = new FollowerReport();
@@ -101,18 +99,29 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			followerReportList.add(report);
 
 			System.out.println("UNFOLLOWED : " + report);
+		}
 
-
-			// Notify user and mention follower name of unfollower user
-			//TODO check follower counts. twitter profile needed
+		if(leftFollowers.size() > 0) {
 			System.out.println("user.getPreferences().isWarnWithEmail() : " + user.getPreferences().isWarnWithEmail());
-			if(user.getPreferences().isWarnWithEmail()) {
-				mailService.sendMail(user.getEmail(), "TwitSec Unfollower Notification", "Unfollowed : " + leftFollower.getTwitterId());
+			if (user.getPreferences().isWarnWithEmail()) {
+				List<twitter4j.User> userProfiles = twitterService.getUserProfiles(user, leftFollowers);
+
+				String emailContent = "";
+				for (twitter4j.User userProfile : userProfiles) {
+					if (userProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
+						emailContent = "The user named " + userProfile.getScreenName() + " stopped following you \n";
+					}
+				}
+
+				if (!emailContent.equals("")) {
+					mailService.sendMail(user.getEmail(), "TwitSec Unfollower Notification", emailContent);
+				}
 			}
 
 			//TODO mention user on a tweet
 			//twitter profile needed
 		}
+
 
 		if(followerReportList.size() > 0) {
 			twitterReportService.createFollowerReports(followerReportList);
