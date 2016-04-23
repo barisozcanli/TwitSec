@@ -103,9 +103,13 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 		if(leftFollowers.size() > 0) {
 			System.out.println("user.getPreferences().isWarnWithEmail() : " + user.getPreferences().isWarnWithEmail());
-			if (user.getPreferences().isWarnWithEmail()) {
-				List<twitter4j.User> userProfiles = twitterService.getUserProfiles(user, leftFollowers);
 
+			List<twitter4j.User> userProfiles = new ArrayList<twitter4j.User>();
+			if (user.getPreferences().isWarnWithEmail() || user.getPreferences().isMentionOldFollowerInTweet()) {
+				userProfiles = twitterService.getUserProfiles(user, leftFollowers);
+			}
+
+			if (user.getPreferences().isWarnWithEmail()) {
 				String emailContent = "";
 				for (twitter4j.User userProfile : userProfiles) {
 					if (userProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
@@ -118,8 +122,14 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 				}
 			}
 
-			//TODO mention user on a tweet
-			//twitter profile needed
+			System.out.println("user.getPreferences().isMentionOldFollowerInTweet() : " + user.getPreferences().isMentionOldFollowerInTweet());
+			if (user.getPreferences().isMentionOldFollowerInTweet()) {
+				for (twitter4j.User userProfile : userProfiles) {
+					if (userProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
+						twitterService.tweet(user, "@" + userProfile.getScreenName() + " " + user.getPreferences().getGoodByeTweetContent());
+					}
+				}
+			}
 		}
 
 

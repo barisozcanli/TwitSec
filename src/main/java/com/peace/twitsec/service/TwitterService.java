@@ -9,6 +9,8 @@ public interface TwitterService {
 
     List<Long> getFollowerIds(User user);
 
+    void tweet(User user, String message);
+
     void sendDirectMessage(User user, long userId, String message);
 
     void sendDirectMessage(User user, List<Follower> userIdList, String message);

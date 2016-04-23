@@ -51,6 +51,16 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 		return followerIds;
 	}
 
+	public void tweet(User user, String message) {
+		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
+
+		try {
+			twitter.updateStatus(message);
+		} catch (TwitterException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void sendDirectMessage(User user, long userId, String message) {
 		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
 		try {
