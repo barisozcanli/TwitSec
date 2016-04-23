@@ -10,6 +10,7 @@ import com.peace.twitsec.data.mongo.repository.UserRepository;
 import com.peace.twitsec.data.session.TwitSecSession;
 import com.peace.twitsec.http.request.AuthenticationRequest;
 import com.peace.twitsec.http.request.CreateUserRequest;
+import com.peace.twitsec.http.request.UpdateUserPreferenceRequest;
 import com.peace.twitsec.http.response.LoginResponse;
 import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.UserService;
@@ -93,5 +94,16 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		TwitSecSession.getInstance().addToken(response.getToken(), user);
 
 		return response;
+	}
+
+	@Override
+	public UserPreferences updateUserPreferences(UpdateUserPreferenceRequest request) {
+		validate(request);
+		User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+
+		authenticatedUser.setPreferences(request.getUserPreferences());
+		userRepository.save(authenticatedUser);
+
+		return request.getUserPreferences();
 	}
 }
