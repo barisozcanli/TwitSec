@@ -104,7 +104,7 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 				twitterService.sendDirectMessage(user, twitterProfile, user.getPreferences().getNewFollowerAutoMessageContent());
 			}
 		}
-		
+
 		for(Follower leftFollower: leftFollowers) {
 			FollowerReport report = new FollowerReport();
 			report.setTwitterId(leftFollower.getTwitterId());

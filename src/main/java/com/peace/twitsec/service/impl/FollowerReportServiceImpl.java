@@ -3,9 +3,8 @@ package com.peace.twitsec.service.impl;
 
 import com.peace.twitsec.data.mongo.model.FollowerReport;
 import com.peace.twitsec.data.mongo.repository.FollowerReportRepository;
-import com.peace.twitsec.data.mongo.repository.UserRepository;
-import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.FollowerReportService;
+import com.peace.twitsec.service.TwitSecService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

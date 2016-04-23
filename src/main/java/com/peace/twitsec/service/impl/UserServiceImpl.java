@@ -2,11 +2,15 @@ package com.peace.twitsec.service.impl;
 
 import com.peace.twitsec.app.common.ErrorCode;
 import com.peace.twitsec.app.exception.TwitSecRuntimeException;
+import com.peace.twitsec.app.util.KeyUtils;
 import com.peace.twitsec.data.mongo.model.Token;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.model.UserPreferences;
 import com.peace.twitsec.data.mongo.repository.UserRepository;
+import com.peace.twitsec.data.session.TwitSecSession;
+import com.peace.twitsec.http.request.AuthenticationRequest;
 import com.peace.twitsec.http.request.CreateUserRequest;
+import com.peace.twitsec.http.response.LoginResponse;
 import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.UserService;
 import org.slf4j.Logger;
@@ -69,5 +73,25 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		user = userRepository.save(newUser);
 
 		return user;
+	}
+
+	@Override
+	public LoginResponse authenticate(AuthenticationRequest request) {
+
+		LoginResponse response = new LoginResponse();
+
+		// TODO password must be stored encrypted
+		User user = userRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
+
+		if (user == null) {
+			throw new TwitSecRuntimeException(400, ErrorCode.USER_NOT_FOUND, "");
+		}
+
+		response.setToken(KeyUtils.currentTimeUUID().toString());
+		response.setId(user.getId());
+
+		TwitSecSession.getInstance().addToken(response.getToken(), user);
+
+		return response;
 	}
 }
