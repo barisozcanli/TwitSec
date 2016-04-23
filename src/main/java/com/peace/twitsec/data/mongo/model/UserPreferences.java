@@ -32,4 +32,6 @@ public class UserPreferences {
 
     private String goodByeTweetContent;
 
+    private List<String> unwantedUsernamePatterns;
+
 }

@@ -3,10 +3,12 @@ package com.peace.twitsec.service.impl;
 
 import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.User;
+import com.peace.twitsec.service.MailService;
 import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.TwitterService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import twitter4j.ResponseList;
@@ -15,10 +17,8 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 @Service
 public class TwitterServiceImpl extends TwitSecService implements TwitterService {
@@ -29,6 +29,8 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 	@Value("${twitter.oauth.consumer.secret}")
 	private String consumerSecret;
 
+	@Autowired
+	private MailService mailService;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -65,28 +67,33 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
 		try {
 			twitter.sendDirectMessage(userId, message);
+
+			System.out.println("MESSAGE SENT | from : " + user.getUsername() + ", to twitterId :  " + userId + ", message : " + message);
 		} catch (TwitterException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public void sendDirectMessage(User user, List<Follower> followerList, String message) {
+	public void sendDirectMessage(User user, twitter4j.User twitterUser, String message) {
+		sendDirectMessage(user, twitterUser.getId(), message);
+	}
+
+	public void blockUser(User user, twitter4j.User twitterUser) {
 		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
 
-		List<twitter4j.User> twitterProfiles = getUserProfiles(user, followerList);
+		try {
+			twitter.createBlock(twitterUser.getId());
 
-		for(twitter4j.User twitterProfile: twitterProfiles) {
-			int followerCount = twitterProfile.getFollowersCount();
+			String emailContent = "The user named " + twitterUser.getScreenName() + " is blocked \n";
 
-			if(followerCount >= user.getPreferences().getNewFollowerFollowerCount()) {
-				try {
-					twitter.sendDirectMessage(twitterProfile.getId(), message);
 
-					System.out.println("MESSAGE SENT | from : " + user.getUsername() + ", to twitterId :  " + twitterProfile.getId() + ", message : " + message);
-				} catch (TwitterException e) {
-					e.printStackTrace();
-				}
+			if (!emailContent.equals("")) {
+				mailService.sendMail(user.getEmail(), "TwitSec Blocking User Notification", emailContent);
 			}
+
+			System.out.println("BLOKED USER | " + user.getUsername() + "blocked twitterId :  " + twitterUser.getId());
+		} catch (TwitterException e) {
+			e.printStackTrace();
 		}
 	}
 

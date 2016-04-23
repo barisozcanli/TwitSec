@@ -13,7 +13,9 @@ public interface TwitterService {
 
     void sendDirectMessage(User user, long userId, String message);
 
-    void sendDirectMessage(User user, List<Follower> userIdList, String message);
+    void sendDirectMessage(User user, twitter4j.User twitterUser, String message);
+
+    void blockUser(User user, twitter4j.User twitterUser);
 
     List<twitter4j.User> getUserProfiles(User user, List<Follower> userList);
 }

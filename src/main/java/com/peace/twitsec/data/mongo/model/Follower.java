@@ -21,6 +21,10 @@ public class Follower {
 	public Follower(){
 	}
 
+    public Follower(Long twitterId){
+        this.twitterId = twitterId;
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers

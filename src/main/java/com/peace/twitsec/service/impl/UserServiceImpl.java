@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 @Service
 public class UserServiceImpl extends TwitSecService implements UserService {
 
@@ -55,6 +57,7 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		preferences.setSendAutoMessageToNewFollower(false);
 		preferences.setNewFollowerAutoMessageContent("Welcome!");
 		preferences.setWarnWithEmail(false);
+		preferences.setUnwantedUsernamePatterns(new ArrayList<String>());
 
 		newUser.setPreferences(preferences);
 
