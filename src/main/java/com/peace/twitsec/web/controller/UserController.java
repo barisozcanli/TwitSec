@@ -2,7 +2,9 @@ package com.peace.twitsec.web.controller;
 
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.model.UserPreferences;
+import com.peace.twitsec.data.session.TwitSecSession;
 import com.peace.twitsec.http.request.AuthenticationRequest;
+import com.peace.twitsec.http.request.BaseRequest;
 import com.peace.twitsec.http.request.CreateUserRequest;
 import com.peace.twitsec.http.request.UpdateUserPreferenceRequest;
 import com.peace.twitsec.http.response.LoginResponse;
@@ -47,5 +49,15 @@ public class UserController {
     UserPreferences updateUser(@RequestBody UpdateUserPreferenceRequest request) {
 
         return userService.updateUserPreferences(request);
+    }
+
+    @ApiOperation(value="Get Logon User")
+    @RequestMapping(value="/user/get", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody
+    User updateUser(@RequestBody BaseRequest request) {
+
+        User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+        return userService.findById(authenticatedUser.getId());
     }
 }
