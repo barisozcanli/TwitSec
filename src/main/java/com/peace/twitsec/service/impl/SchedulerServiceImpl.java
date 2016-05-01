@@ -89,18 +89,20 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 		for(twitter4j.User twitterProfile: newFollowersProfiles) {
 			//check unwanted username
-			boolean patternMatched = false;
+			boolean hasPatternsMatched = false;
+			String patternsMatched = "";
 			for(String pattern : user.getPreferences().getUnwantedUsernamePatterns()) {
 				if(twitterProfile.getScreenName().contains(pattern)) {
-					patternMatched = true;
+					hasPatternsMatched = true;
+					patternsMatched += pattern + " ";
 				}
 			}
-			if(patternMatched) {
-				twitterService.blockUser(user, twitterProfile);
+			if(hasPatternsMatched) {
+				twitterService.blockUser(user, twitterProfile, patternsMatched);
 				newFollowerList.remove(new Follower(twitterProfile.getId()));
 			}
 
-			if(user.getPreferences().isSendAutoMessageToNewFollower() && !patternMatched) {
+			if(user.getPreferences().isSendAutoMessageToNewFollower() && !hasPatternsMatched) {
 				twitterService.sendDirectMessage(user, twitterProfile, user.getPreferences().getNewFollowerAutoMessageContent());
 			}
 		}

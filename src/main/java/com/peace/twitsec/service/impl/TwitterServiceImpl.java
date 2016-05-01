@@ -1,8 +1,10 @@
 package com.peace.twitsec.service.impl;
 
 
+import com.peace.twitsec.data.mongo.model.BlockReport;
 import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.User;
+import com.peace.twitsec.service.BlockReportService;
 import com.peace.twitsec.service.MailService;
 import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.TwitterService;
@@ -18,6 +20,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -31,6 +34,9 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 	@Autowired
 	private MailService mailService;
+
+	@Autowired
+	private BlockReportService blockReportService;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -78,7 +84,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 		sendDirectMessage(user, twitterUser.getId(), message);
 	}
 
-	public void blockUser(User user, twitter4j.User twitterUser) {
+	public void blockUser(User user, twitter4j.User twitterUser, String patternsMatched) {
 		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
 
 		try {
@@ -86,10 +92,19 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 			String emailContent = "The user named " + twitterUser.getScreenName() + " is blocked \n";
 
-
 			if (!emailContent.equals("")) {
 				mailService.sendMail(user.getEmail(), "TwitSec Blocking User Notification", emailContent);
 			}
+
+			BlockReport blockReport = new BlockReport();
+			blockReport.setUser(user);
+			blockReport.setTwitterId(twitterUser.getId());
+			blockReport.setBlockReason(patternsMatched);
+			blockReport.setCreatedAt(new Date());
+
+			List<BlockReport> blockReportList = new ArrayList<BlockReport>();
+			blockReportList.add(blockReport);
+			blockReportService.createBlockReports(blockReportList);
 
 			System.out.println("BLOKED USER | " + user.getUsername() + "blocked twitterId :  " + twitterUser.getId());
 		} catch (TwitterException e) {
