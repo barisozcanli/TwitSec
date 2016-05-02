@@ -23,6 +23,9 @@ public class BlockReport extends BaseEntity{
     @Field("blocked_user")
     private Long twitterId;
 
+    @DBRef
+    private TwitterUser twitterUser;
+
     private Date createdAt;
 
     private String blockReason;

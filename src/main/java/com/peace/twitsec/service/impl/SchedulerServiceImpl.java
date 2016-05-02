@@ -4,6 +4,7 @@ import com.peace.twitsec.app.util.TwitterUtil;
 import com.peace.twitsec.data.enums.FollowAction;
 import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.FollowerReport;
+import com.peace.twitsec.data.mongo.model.TwitterUser;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.repository.UserRepository;
 import com.peace.twitsec.service.*;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import twitter4j.Twitter;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -73,19 +75,8 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 
 		List<FollowerReport> followerReportList = new ArrayList<FollowerReport>();
 
-		for(Follower newFollower: newFollowers) {
-			FollowerReport report = new FollowerReport();
-			report.setTwitterId(newFollower.getTwitterId());
-			report.setUser(user);
-			report.setCreatedAt(date);
-			report.setFollowAction(FollowAction.FOLLOWED);
-
-			followerReportList.add(report);
-
-			System.out.println("FOLLOWED : " + report);
-		}
-
 		List<twitter4j.User> newFollowersProfiles = twitterService.getUserProfiles(user, newFollowers);
+		List<TwitterUser> twitterUsers = new ArrayList<TwitterUser>();
 
 		for(twitter4j.User twitterProfile: newFollowersProfiles) {
 			//check unwanted username
@@ -105,18 +96,26 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			if(user.getPreferences().isSendAutoMessageToNewFollower() && !hasPatternsMatched) {
 				twitterService.sendDirectMessage(user, twitterProfile, user.getPreferences().getNewFollowerAutoMessageContent());
 			}
+
+			TwitterUser myTwitterUser = TwitterUtil.extractTwitterUser(twitterProfile);
+			twitterUsers.add(myTwitterUser);
 		}
 
-		for(Follower leftFollower: leftFollowers) {
+		if(newFollowers.size() > 0) {
+			twitterUsers = twitterService.createTwitterUsers(twitterUsers);
+		}
+
+		for(Follower newFollower: newFollowers) {
 			FollowerReport report = new FollowerReport();
-			report.setTwitterId(leftFollower.getTwitterId());
+			report.setTwitterId(newFollower.getTwitterId());
 			report.setUser(user);
 			report.setCreatedAt(date);
-			report.setFollowAction(FollowAction.UNFOLLOWED);
+			report.setFollowAction(FollowAction.FOLLOWED);
+			report.setTwitterUser(getTwitterUserFromList(twitterUsers, newFollower.getTwitterId()));
 
 			followerReportList.add(report);
 
-			System.out.println("UNFOLLOWED : " + report);
+			System.out.println("FOLLOWED : " + report);
 		}
 
 		if(leftFollowers.size() > 0) {
@@ -133,6 +132,9 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 					if (userProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
 						emailContent = "The user named " + userProfile.getScreenName() + " stopped following you \n";
 					}
+
+					TwitterUser myTwitterUser = TwitterUtil.extractTwitterUser(userProfile);
+					twitterUsers.add(myTwitterUser);
 				}
 
 				if (!emailContent.equals("")) {
@@ -150,9 +152,34 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			}
 		}
 
+		if(leftFollowers.size() > 0) {
+			twitterUsers = twitterService.createTwitterUsers(twitterUsers);
+		}
+
+		for(Follower leftFollower: leftFollowers) {
+			FollowerReport report = new FollowerReport();
+			report.setTwitterId(leftFollower.getTwitterId());
+			report.setUser(user);
+			report.setCreatedAt(date);
+			report.setFollowAction(FollowAction.UNFOLLOWED);
+			report.setTwitterUser(getTwitterUserFromList(twitterUsers, leftFollower.getTwitterId()));
+
+			followerReportList.add(report);
+
+			System.out.println("UNFOLLOWED : " + report);
+		}
+
 
 		if(followerReportList.size() > 0) {
 			twitterReportService.createFollowerReports(followerReportList);
 		}
+	}
+
+	private TwitterUser getTwitterUserFromList(List<TwitterUser> twitterUsers, long twitterId) {
+		for(TwitterUser twitterUser: twitterUsers) {
+			if(twitterUser.getTwitterId() == twitterId)
+				return twitterUser;
+		}
+		return null;
 	}
 }

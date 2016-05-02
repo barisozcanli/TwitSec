@@ -1,6 +1,7 @@
 package com.peace.twitsec.service;
 
 import com.peace.twitsec.data.mongo.model.Follower;
+import com.peace.twitsec.data.mongo.model.TwitterUser;
 import com.peace.twitsec.data.mongo.model.User;
 
 import java.util.List;
@@ -18,4 +19,8 @@ public interface TwitterService {
     void blockUser(User user, twitter4j.User twitterUser, String reason);
 
     List<twitter4j.User> getUserProfiles(User user, List<Follower> userList);
+
+    TwitterUser createTwitterUser(TwitterUser twitterUser);
+
+    List<TwitterUser> createTwitterUsers(List<TwitterUser> twitterUserList);
 }

@@ -1,9 +1,12 @@
 package com.peace.twitsec.service.impl;
 
 
+import com.peace.twitsec.app.util.TwitterUtil;
 import com.peace.twitsec.data.mongo.model.BlockReport;
 import com.peace.twitsec.data.mongo.model.Follower;
+import com.peace.twitsec.data.mongo.model.TwitterUser;
 import com.peace.twitsec.data.mongo.model.User;
+import com.peace.twitsec.data.mongo.repository.TwitterUserRepository;
 import com.peace.twitsec.service.BlockReportService;
 import com.peace.twitsec.service.MailService;
 import com.peace.twitsec.service.TwitSecService;
@@ -37,6 +40,9 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 	@Autowired
 	private BlockReportService blockReportService;
+
+	@Autowired
+	private TwitterUserRepository twitterUserRepository;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -96,11 +102,15 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 				mailService.sendMail(user.getEmail(), "TwitSec Blocking User Notification", emailContent);
 			}
 
+			TwitterUser myTwitterUser = TwitterUtil.extractTwitterUser(twitterUser);
+			myTwitterUser = createTwitterUser(myTwitterUser);
+
 			BlockReport blockReport = new BlockReport();
 			blockReport.setUser(user);
 			blockReport.setTwitterId(twitterUser.getId());
 			blockReport.setBlockReason(patternsMatched);
 			blockReport.setCreatedAt(new Date());
+			blockReport.setTwitterUser(myTwitterUser);
 
 			List<BlockReport> blockReportList = new ArrayList<BlockReport>();
 			blockReportList.add(blockReport);
@@ -153,4 +163,37 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 		return tf.getInstance();
 	}
 
+	public TwitterUser createTwitterUser(TwitterUser user) {
+
+		TwitterUser existingUser = twitterUserRepository.findByTwitterId(user.getTwitterId());
+
+		if(existingUser == null) {
+			existingUser = twitterUserRepository.save(user);
+		} else {
+			existingUser.setTwitterId(user.getTwitterId());
+			existingUser.setBiggerProfileImageURL(user.getBiggerProfileImageURL());
+			existingUser.setDescription(user.getDescription());
+			existingUser.setFollowersCount(user.getFollowersCount());
+			existingUser.setFriendsCount(user.getFriendsCount());
+			existingUser.setMiniProfileImageURL(user.getMiniProfileImageURL());
+			existingUser.setName(user.getName());
+			existingUser.setOriginalProfileImageURL(user.getOriginalProfileImageURL());
+			existingUser.setProfileImageURL(user.getProfileImageURL());
+			existingUser.setProfileBackgroundColor(user.getProfileBackgroundColor());
+			existingUser.setProfileBackgroundImageURL(user.getProfileBackgroundImageURL());
+			existingUser.setProfileTextColor(user.getProfileTextColor());
+			existingUser.setURL(user.getURL());
+			existingUser.setScreenName(user.getScreenName());
+
+			twitterUserRepository.save(existingUser);
+		}
+
+		return existingUser;
+	}
+
+	public List<TwitterUser> createTwitterUsers(List<TwitterUser> twitterUserList) {
+		List<TwitterUser> twitterUsers = twitterUserRepository.save(twitterUserList);
+
+		return twitterUsers;
+	}
 }

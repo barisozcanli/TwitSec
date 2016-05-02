@@ -26,6 +26,9 @@ public class FollowerReport extends BaseEntity{
     @Field("follower")
     private Long twitterId;
 
+    @DBRef
+    private TwitterUser twitterUser;
+
     private Date createdAt;
 
     private FollowAction followAction;
