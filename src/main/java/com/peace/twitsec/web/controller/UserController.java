@@ -42,6 +42,13 @@ public class UserController {
 
     }
 
+    @ApiOperation(value="Logout")
+    @RequestMapping(value="/user/logout", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody boolean logout(@RequestBody BaseRequest request){
+        return userService.logout(request);
+    }
+
     @ApiOperation(value="Update User Preferences")
     @RequestMapping(value="/user/updateUserPreferences", method = RequestMethod.POST)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
