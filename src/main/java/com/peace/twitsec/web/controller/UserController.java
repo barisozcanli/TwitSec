@@ -79,7 +79,7 @@ public class UserController {
     @RequestMapping(value="/user/getBlockedUsers", method = RequestMethod.POST)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
     public @ResponseBody
-    List<BlockReport> updateUser(@RequestBody BaseRequest request) {
+    List<BlockReport> getBlockedUsers(@RequestBody BaseRequest request) {
 
         User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
         return blockReportService.getBlockReportsOfUser(authenticatedUser);
