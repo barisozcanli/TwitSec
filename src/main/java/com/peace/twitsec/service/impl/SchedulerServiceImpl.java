@@ -122,8 +122,12 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			System.out.println("user.getPreferences().isWarnWithEmail() : " + user.getPreferences().isWarnWithEmail());
 
 			List<twitter4j.User> userProfiles = new ArrayList<twitter4j.User>();
-			if (user.getPreferences().isWarnWithEmail() || user.getPreferences().isMentionOldFollowerInTweet()) {
-				userProfiles = twitterService.getUserProfiles(user, leftFollowers);
+
+			userProfiles = twitterService.getUserProfiles(user, leftFollowers);
+
+			for (twitter4j.User userProfile : userProfiles) {
+				TwitterUser myTwitterUser = TwitterUtil.extractTwitterUser(userProfile);
+				twitterUsers.add(myTwitterUser);
 			}
 
 			if (user.getPreferences().isWarnWithEmail()) {
@@ -132,9 +136,6 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 					if (userProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
 						emailContent = "The user named " + userProfile.getScreenName() + " stopped following you \n";
 					}
-
-					TwitterUser myTwitterUser = TwitterUtil.extractTwitterUser(userProfile);
-					twitterUsers.add(myTwitterUser);
 				}
 
 				if (!emailContent.equals("")) {

@@ -7,8 +7,10 @@ import com.peace.twitsec.data.mongo.model.UserPreferences;
 import com.peace.twitsec.data.session.TwitSecSession;
 import com.peace.twitsec.http.request.*;
 import com.peace.twitsec.http.response.LoginResponse;
+import com.peace.twitsec.http.response.OauthResponse;
 import com.peace.twitsec.service.BlockReportService;
 import com.peace.twitsec.service.FollowerReportService;
+import com.peace.twitsec.service.TwitterService;
 import com.peace.twitsec.service.UserService;
 import com.wordnik.swagger.annotations.Api;
 import com.wordnik.swagger.annotations.ApiOperation;
@@ -33,12 +35,32 @@ public class UserController {
     @Autowired
     private FollowerReportService followerReportService;
 
+    @Autowired
+    private TwitterService twitterService;
+
     @ApiOperation(value="Create User")
     @RequestMapping(value="/user/create", method = RequestMethod.POST)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
     public @ResponseBody User createUser(@RequestBody CreateUserRequest request) {
 
         return userService.createUser(request);
+    }
+
+    @ApiOperation(value="Get Twitter OAUTH URL")
+         @RequestMapping(value="/user/authUrl", method = RequestMethod.POST)
+         @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+         public @ResponseBody
+         OauthResponse getOauthURL(){
+
+        return twitterService.getOauthURL();
+    }
+
+    @ApiOperation(value="Login with Twitter")
+    @RequestMapping(value="/user/loginTwitter", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody
+    OauthResponse authenticateWithTwitter(@RequestBody TwitterAuthenticationRequest request){
+        return twitterService.getConsumerSecret(request);
     }
 
     @ApiOperation(value="Login")

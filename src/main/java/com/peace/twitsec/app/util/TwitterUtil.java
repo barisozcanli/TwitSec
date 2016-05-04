@@ -43,6 +43,7 @@ public class TwitterUtil {
         user.setBiggerProfileImageURL(twitterUser.getBiggerProfileImageURL());
         user.setDescription(twitterUser.getDescription());
         user.setFollowersCount(twitterUser.getFollowersCount());
+        user.setTweetCount(twitterUser.getStatusesCount());
         user.setFriendsCount(twitterUser.getFriendsCount());
         user.setMiniProfileImageURL(twitterUser.getMiniProfileImageURL());
         user.setName(twitterUser.getName());

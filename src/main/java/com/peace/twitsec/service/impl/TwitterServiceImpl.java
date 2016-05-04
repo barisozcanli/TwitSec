@@ -7,6 +7,8 @@ import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.TwitterUser;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.repository.TwitterUserRepository;
+import com.peace.twitsec.http.request.TwitterAuthenticationRequest;
+import com.peace.twitsec.http.response.OauthResponse;
 import com.peace.twitsec.service.BlockReportService;
 import com.peace.twitsec.service.MailService;
 import com.peace.twitsec.service.TwitSecService;
@@ -20,6 +22,8 @@ import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 import java.util.ArrayList;
@@ -45,6 +49,57 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 	private TwitterUserRepository twitterUserRepository;
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	public OauthResponse getOauthURL() {
+
+		String url="";
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+
+		cb.setDebugEnabled(true)
+				.setOAuthConsumerKey(consumerKey)
+				.setOAuthConsumerSecret(consumerSecret);
+
+		try {
+			TwitterFactory tf = new TwitterFactory(cb.build());
+			Twitter twitter = tf.getInstance();
+
+			RequestToken requestToken = twitter.getOAuthRequestToken();
+			url = requestToken.getAuthorizationURL();
+		} catch (Exception e) {}
+
+
+		OauthResponse response = new OauthResponse();
+		response.setUrl(url);
+		return response;
+	}
+
+	public OauthResponse getConsumerSecret(TwitterAuthenticationRequest request) {
+
+		String url="";
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+
+		cb.setDebugEnabled(true)
+				.setOAuthConsumerKey(consumerKey)
+				.setOAuthConsumerSecret(consumerSecret);
+
+		try {
+			TwitterFactory tf = new TwitterFactory(cb.build());
+			Twitter twitter = tf.getInstance();
+
+			RequestToken requestToken = twitter.getOAuthRequestToken(request.getOauthToken());
+
+			AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, request.getVerifier());
+
+			System.out.println("Access token: " + accessToken.getToken());
+			System.out.println("Access token secret: " + accessToken.getTokenSecret());
+
+		} catch (Exception e) {}
+
+
+		OauthResponse response = new OauthResponse();
+		response.setUrl(url);
+		return response;
+	}
 
 	public List<Long> getFollowerIds(User user) {
 

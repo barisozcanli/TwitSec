@@ -10,26 +10,15 @@ import org.springframework.data.mongodb.core.mapping.Field;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper=false)
+@Document(collection = "authtoken")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class TwitterUser extends BaseEntity {
+public class AuthToken extends BaseEntity{
 
-	Long twitterId;
-	String screenName;
-	String name;
-	Integer followersCount;
-	Integer friendsCount;
-	Integer tweetCount;
-	String miniProfileImageURL;
-	String profileImageURL;
-	String biggerProfileImageURL;
-	String originalProfileImageURL;
-	String description;
-	String profileBackgroundColor;
-	String profileBackgroundImageURL;
-	String profileTextColor;
-	String URL;
+    private String token;
+    private String tokenSecret;
 
-	public TwitterUser(){
+	public AuthToken(){
 	}
 }
