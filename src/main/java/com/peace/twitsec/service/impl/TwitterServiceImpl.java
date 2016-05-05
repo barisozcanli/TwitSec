@@ -2,17 +2,12 @@ package com.peace.twitsec.service.impl;
 
 
 import com.peace.twitsec.app.util.TwitterUtil;
-import com.peace.twitsec.data.mongo.model.BlockReport;
-import com.peace.twitsec.data.mongo.model.Follower;
-import com.peace.twitsec.data.mongo.model.TwitterUser;
-import com.peace.twitsec.data.mongo.model.User;
+import com.peace.twitsec.data.mongo.model.*;
 import com.peace.twitsec.data.mongo.repository.TwitterUserRepository;
 import com.peace.twitsec.http.request.TwitterAuthenticationRequest;
-import com.peace.twitsec.http.response.OauthResponse;
-import com.peace.twitsec.service.BlockReportService;
-import com.peace.twitsec.service.MailService;
-import com.peace.twitsec.service.TwitSecService;
-import com.peace.twitsec.service.TwitterService;
+import com.peace.twitsec.http.response.OauthConsumerResponse;
+import com.peace.twitsec.http.response.OauthURLResponse;
+import com.peace.twitsec.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +43,11 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 	@Autowired
 	private TwitterUserRepository twitterUserRepository;
 
+	@Autowired AuthTokenService authTokenService;
+
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	public OauthResponse getOauthURL() {
+	public OauthURLResponse getOauthURL() {
 
 		String url="";
 		ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -64,40 +61,56 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 			Twitter twitter = tf.getInstance();
 
 			RequestToken requestToken = twitter.getOAuthRequestToken();
+
+			AuthToken authToken = new AuthToken();
+			authToken.setToken(requestToken.getToken());
+			authToken.setTokenSecret(requestToken.getTokenSecret());
+			authTokenService.createAuthToken(authToken);
+
+
 			url = requestToken.getAuthorizationURL();
 		} catch (Exception e) {}
 
 
-		OauthResponse response = new OauthResponse();
+		OauthURLResponse response = new OauthURLResponse();
 		response.setUrl(url);
 		return response;
 	}
 
-	public OauthResponse getConsumerSecret(TwitterAuthenticationRequest request) {
+	public OauthConsumerResponse getConsumerSecret(TwitterAuthenticationRequest request) throws Exception {
 
-		String url="";
+		AuthToken authToken = authTokenService.getAuthToken(request.getOauthToken());
+
 		ConfigurationBuilder cb = new ConfigurationBuilder();
 
 		cb.setDebugEnabled(true)
 				.setOAuthConsumerKey(consumerKey)
 				.setOAuthConsumerSecret(consumerSecret);
 
+		AccessToken accessToken;
+		Twitter twitter;
 		try {
 			TwitterFactory tf = new TwitterFactory(cb.build());
-			Twitter twitter = tf.getInstance();
+			twitter = tf.getInstance();
 
-			RequestToken requestToken = twitter.getOAuthRequestToken(request.getOauthToken());
+			RequestToken requestToken = new RequestToken(authToken.getToken(), authToken.getTokenSecret());
 
-			AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, request.getVerifier());
+			accessToken = twitter.getOAuthAccessToken(requestToken, request.getVerifier());
 
 			System.out.println("Access token: " + accessToken.getToken());
 			System.out.println("Access token secret: " + accessToken.getTokenSecret());
+			System.out.println("USERNAME: " + twitter.getScreenName());
 
-		} catch (Exception e) {}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
+		OauthConsumerResponse response = new OauthConsumerResponse();
+		response.setAccessToken(accessToken.getToken());
+		response.setAccessTokenSecret(accessToken.getTokenSecret());
+		response.setUsername(twitter.getScreenName());
 
-		OauthResponse response = new OauthResponse();
-		response.setUrl(url);
 		return response;
 	}
 

@@ -7,7 +7,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper=false)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class OauthResponse {
+public class OauthConsumerResponse {
 
-	private String url;
+	private String accessToken;
+	private String accessTokenSecret;
+	private String username;
+	private String email;
 }

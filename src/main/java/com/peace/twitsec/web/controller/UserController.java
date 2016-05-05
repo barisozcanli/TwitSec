@@ -7,7 +7,7 @@ import com.peace.twitsec.data.mongo.model.UserPreferences;
 import com.peace.twitsec.data.session.TwitSecSession;
 import com.peace.twitsec.http.request.*;
 import com.peace.twitsec.http.response.LoginResponse;
-import com.peace.twitsec.http.response.OauthResponse;
+import com.peace.twitsec.http.response.OauthURLResponse;
 import com.peace.twitsec.service.BlockReportService;
 import com.peace.twitsec.service.FollowerReportService;
 import com.peace.twitsec.service.TwitterService;
@@ -50,17 +50,22 @@ public class UserController {
          @RequestMapping(value="/user/authUrl", method = RequestMethod.POST)
          @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
          public @ResponseBody
-         OauthResponse getOauthURL(){
+    OauthURLResponse getOauthURL(){
 
         return twitterService.getOauthURL();
     }
 
     @ApiOperation(value="Login with Twitter")
-    @RequestMapping(value="/user/loginTwitter", method = RequestMethod.POST)
+    @RequestMapping(value="/user/loginTwitter", method = RequestMethod.GET)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
     public @ResponseBody
-    OauthResponse authenticateWithTwitter(@RequestBody TwitterAuthenticationRequest request){
-        return twitterService.getConsumerSecret(request);
+    LoginResponse authenticateWithTwitter(@RequestParam(value="oauth_token") final String oauthToken, @RequestParam(value="oauth_verifier") final String oauthVerifier ) throws Exception {
+
+        TwitterAuthenticationRequest request = new TwitterAuthenticationRequest();
+        request.setOauthToken(oauthToken);
+        request.setVerifier(oauthVerifier);
+
+        return userService.authenticateWithTwitter(request);
     }
 
     @ApiOperation(value="Login")

@@ -4,7 +4,8 @@ import com.peace.twitsec.data.mongo.model.Follower;
 import com.peace.twitsec.data.mongo.model.TwitterUser;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.http.request.TwitterAuthenticationRequest;
-import com.peace.twitsec.http.response.OauthResponse;
+import com.peace.twitsec.http.response.OauthConsumerResponse;
+import com.peace.twitsec.http.response.OauthURLResponse;
 
 import java.util.List;
 
@@ -26,8 +27,8 @@ public interface TwitterService {
 
     List<TwitterUser> createTwitterUsers(List<TwitterUser> twitterUserList);
 
-    OauthResponse getOauthURL();
+    OauthURLResponse getOauthURL();
 
-    OauthResponse getConsumerSecret(TwitterAuthenticationRequest request);
+    OauthConsumerResponse getConsumerSecret(TwitterAuthenticationRequest request) throws Exception;
 
 }

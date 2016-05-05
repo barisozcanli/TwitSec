@@ -8,12 +8,11 @@ import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.model.UserPreferences;
 import com.peace.twitsec.data.mongo.repository.UserRepository;
 import com.peace.twitsec.data.session.TwitSecSession;
-import com.peace.twitsec.http.request.AuthenticationRequest;
-import com.peace.twitsec.http.request.BaseRequest;
-import com.peace.twitsec.http.request.CreateUserRequest;
-import com.peace.twitsec.http.request.UpdateUserPreferenceRequest;
+import com.peace.twitsec.http.request.*;
 import com.peace.twitsec.http.response.LoginResponse;
+import com.peace.twitsec.http.response.OauthConsumerResponse;
 import com.peace.twitsec.service.TwitSecService;
+import com.peace.twitsec.service.TwitterService;
 import com.peace.twitsec.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +29,9 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 	@Autowired
 	private UserRepository userRepository;
 
+
+	@Autowired
+	private TwitterService twitterService;
 
 	public User findById(String id) {
 		User user = userRepository.findOne(id);
@@ -95,6 +97,39 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		TwitSecSession.getInstance().addToken(response.getToken(), user);
 
 		return response;
+	}
+
+	@Override
+	public LoginResponse authenticateWithTwitter(TwitterAuthenticationRequest request) throws Exception {
+
+		OauthConsumerResponse response = twitterService.getConsumerSecret(request);
+		LoginResponse loginResponse = new LoginResponse();
+
+		User user = userRepository.findByUsername(response.getUsername());
+
+		if (user == null) {
+			CreateUserRequest createUserRequest = new CreateUserRequest();
+			createUserRequest.setUsername(response.getUsername());
+			createUserRequest.setAccessToken(response.getAccessToken());
+			createUserRequest.setAccessTokenSecret(response.getAccessTokenSecret());
+
+			user = createUser(createUserRequest);
+		} else {
+			Token token = new Token();
+			token.setAccessToken(request.getOauthToken());
+			token.setAccessTokenSecret(request.getVerifier());
+
+			user.setToken(token);
+
+			userRepository.save(user);
+		}
+
+		loginResponse.setToken(KeyUtils.currentTimeUUID().toString());
+		loginResponse.setId(user.getId());
+
+		TwitSecSession.getInstance().addToken(loginResponse.getToken(), user);
+
+		return loginResponse;
 	}
 
 	@Override

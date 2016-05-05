@@ -14,7 +14,6 @@ public class CreateUserRequest {
 	@Size(min=4)
 	private String username;
 
-	@NotNull
 	private String email;
 
 	@NotNull
