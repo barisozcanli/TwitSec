@@ -56,15 +56,10 @@ public class UserController {
     }
 
     @ApiOperation(value="Login with Twitter")
-    @RequestMapping(value="/user/loginTwitter", method = RequestMethod.GET)
+    @RequestMapping(value="/user/loginTwitter", method = RequestMethod.POST)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
     public @ResponseBody
-    LoginResponse authenticateWithTwitter(@RequestParam(value="oauth_token") final String oauthToken, @RequestParam(value="oauth_verifier") final String oauthVerifier ) throws Exception {
-
-        TwitterAuthenticationRequest request = new TwitterAuthenticationRequest();
-        request.setOauthToken(oauthToken);
-        request.setVerifier(oauthVerifier);
-
+    LoginResponse authenticateWithTwitter(@RequestBody TwitterAuthenticationRequest request) throws Exception {
         return userService.authenticateWithTwitter(request);
     }
 
