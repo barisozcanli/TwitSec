@@ -152,4 +152,14 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 
 		return request.getUserPreferences();
 	}
+
+	@Override
+	public User updateUserInfo(UpdateUserInfoRequest request) {
+		validate(request);
+		User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+
+		authenticatedUser.setEmail(request.getEmail());
+
+		return userRepository.save(authenticatedUser);
+	}
 }

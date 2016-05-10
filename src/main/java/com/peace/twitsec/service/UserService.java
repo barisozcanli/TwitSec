@@ -17,5 +17,7 @@ public interface UserService {
 
     UserPreferences updateUserPreferences(UpdateUserPreferenceRequest request);
 
+    User updateUserInfo(UpdateUserInfoRequest request);
+
     LoginResponse authenticateWithTwitter(TwitterAuthenticationRequest request) throws Exception;
 }

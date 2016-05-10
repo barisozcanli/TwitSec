@@ -68,7 +68,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 			authTokenService.createAuthToken(authToken);
 
 
-			url = requestToken.getAuthorizationURL();
+			url = requestToken.getAuthenticationURL();
 		} catch (Exception e) {}
 
 

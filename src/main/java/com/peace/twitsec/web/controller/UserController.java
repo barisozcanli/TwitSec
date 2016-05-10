@@ -89,9 +89,18 @@ public class UserController {
     @RequestMapping(value="/user/updateUserPreferences", method = RequestMethod.POST)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
     public @ResponseBody
-    UserPreferences updateUser(@RequestBody UpdateUserPreferenceRequest request) {
+    UserPreferences updateUserPreferences(@RequestBody UpdateUserPreferenceRequest request) {
 
         return userService.updateUserPreferences(request);
+    }
+
+    @ApiOperation(value="Update User Info")
+    @RequestMapping(value="/user/updateUserInfo", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody
+    User updateUser(@RequestBody UpdateUserInfoRequest request) {
+
+        return userService.updateUserInfo(request);
     }
 
     @ApiOperation(value="Get Logon User")
