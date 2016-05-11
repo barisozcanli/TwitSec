@@ -43,7 +43,14 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 		for(User user : users) {
 			List<Follower> followersList = new ArrayList<Follower>();
 
-			List<Long> followerIds = twitterService.getFollowerIds(user);
+			List<Long> followerIds;
+			try {
+				followerIds = twitterService.getFollowerIds(user);
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+				continue;
+			}
 
 			for (Long id : followerIds) {
 				Follower follower = new Follower();
