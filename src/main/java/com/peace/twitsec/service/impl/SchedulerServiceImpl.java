@@ -36,7 +36,7 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 	private MailService mailService;
 
 	@Override
-	public void checkNewOldFollowers() {
+	public void checkNewOldFollowers() throws Exception {
 		// scheduler edilecek tüm kullanıcıları load Et
 		List<User> users = userRepository.findAll();
 

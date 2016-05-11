@@ -114,7 +114,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 		return response;
 	}
 
-	public List<Long> getFollowerIds(User user) {
+	public List<Long> getFollowerIds(User user) throws Exception {
 
 		List<Long> followerIds = new ArrayList<Long>();
 		Twitter twitter = getTwitterInstance(user.getToken().getAccessToken(), user.getToken().getAccessTokenSecret());
@@ -123,8 +123,8 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 		try {
 			ids = twitter.getFollowersIDs(-1).getIDs();
 		} catch (TwitterException e) {
-			//TODO handle this
 			e.printStackTrace();
+			throw new Exception("Couldn't retrieve followers!!!");
 		}
 
 		for (int i = 0; i < ids.length; i++) {

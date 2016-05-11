@@ -6,6 +6,6 @@ import java.util.Set;
 
 public interface SchedulerService {
 
-    void checkNewOldFollowers();
+    void checkNewOldFollowers() throws Exception;
 
 }

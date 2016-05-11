@@ -15,7 +15,11 @@ public class TwitterScheduler {
     @Scheduled(fixedDelay = 1 * 60 * 1000 )
     public void checkFollowers() {
 
-        schedulerService.checkNewOldFollowers();
+        try {
+            schedulerService.checkNewOldFollowers();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

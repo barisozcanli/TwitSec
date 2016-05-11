@@ -108,6 +108,16 @@ public class UserController {
         return userService.findById(authenticatedUser.getId());
     }
 
+    @ApiOperation(value="Get Chart Reports")
+    @RequestMapping(value="/user/getReports", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody
+    User getChartReports(@RequestBody BaseRequest request) {
+
+        User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+        return userService.findById(authenticatedUser.getId());
+    }
+
     @ApiOperation(value="Get Blocked Users")
          @RequestMapping(value="/user/getBlockedUsers", method = RequestMethod.POST)
          @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})

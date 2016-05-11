@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface TwitterService {
 
-    List<Long> getFollowerIds(User user);
+    List<Long> getFollowerIds(User user) throws Exception;
 
     void tweet(User user, String message);
 
