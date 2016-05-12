@@ -193,7 +193,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 	}
 
 	public List<twitter4j.User> getUserProfiles(User user, List<Follower> userList) {
-		System.out.print("Getting user profiles for the user : " + user.getUsername() + " === userList : " + userList.toString());
+		System.out.println("Getting user profiles for the user : " + user.getUsername() + " === userList : " + userList.toString());
 		List<twitter4j.User> twitterUserList = new ArrayList<twitter4j.User>();
 		if(userList.size() == 0) {
 			return twitterUserList;
