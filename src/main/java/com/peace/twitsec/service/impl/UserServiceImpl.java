@@ -14,12 +14,14 @@ import com.peace.twitsec.http.response.OauthConsumerResponse;
 import com.peace.twitsec.service.TwitSecService;
 import com.peace.twitsec.service.TwitterService;
 import com.peace.twitsec.service.UserService;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl extends TwitSecService implements UserService {
@@ -146,6 +148,15 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 	public UserPreferences updateUserPreferences(UpdateUserPreferenceRequest request) {
 		validate(request);
 		User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+
+		List<String> patterns = new ArrayList<String>();
+		for(String pattern :request.getUserPreferences().getUnwantedUsernamePatterns()) {
+			if(StringUtils.isNotBlank(pattern)) {
+				patterns.add(pattern);
+			}
+		}
+		request.getUserPreferences().setUnwantedUsernamePatterns(patterns);
+
 
 		authenticatedUser.setPreferences(request.getUserPreferences());
 		userRepository.save(authenticatedUser);
