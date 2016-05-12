@@ -121,7 +121,7 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 
 			user.setToken(token);
 
-			userRepository.save(user);
+			//userRepository.save(user);
 		}
 
 		loginResponse.setToken(KeyUtils.currentTimeUUID().toString());
