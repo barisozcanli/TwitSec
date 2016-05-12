@@ -8,6 +8,7 @@ import com.peace.twitsec.data.mongo.model.TwitterUser;
 import com.peace.twitsec.data.mongo.model.User;
 import com.peace.twitsec.data.mongo.repository.UserRepository;
 import com.peace.twitsec.service.*;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 		List<User> users = userRepository.findAll();
 
 		for(User user : users) {
+			System.out.println("Fetching followerIds from twitter for user : " + user.getUsername());
 			List<Follower> followersList = new ArrayList<Follower>();
 
 			List<Long> followerIds;
@@ -137,7 +139,7 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 				twitterUsers.add(myTwitterUser);
 			}
 
-			if (user.getPreferences().isWarnWithEmail()) {
+			if (user.getPreferences().isWarnWithEmail() && StringUtils.isNotBlank(user.getEmail()) ) {
 				String emailContent = "";
 				for (twitter4j.User userProfile : userProfiles) {
 					if (userProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
