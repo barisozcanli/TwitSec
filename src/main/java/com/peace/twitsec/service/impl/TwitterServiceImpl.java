@@ -69,6 +69,8 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 
 			url = requestToken.getAuthenticationURL();
+
+			System.out.println("Authentication URL : " + url);
 		} catch (Exception e) {}
 
 
@@ -214,7 +216,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 				twitterUserList.add(twitterUser);
 			}
 		} catch (TwitterException e) {
-			System.out.print("couldn't lookup users for user " + user.getUsername());
+			System.out.println("couldn't lookup users for user " + user.getUsername());
 			e.printStackTrace();
 		}
 
