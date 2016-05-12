@@ -38,6 +38,17 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
 	}
 
 	@Override
+	public User findByOauthToken(String oauthToken, String verifier) {
+
+		Query query = new Query();
+		query.addCriteria(Criteria.where("token.oauthToken").is(oauthToken).and("token.oauthTokenVerifier").is(verifier));
+
+		User user = mongoTemplate.findOne(query, User.class);
+
+		return user;
+	}
+
+	@Override
 	public User findByUsername(String username) {
 		Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(username));

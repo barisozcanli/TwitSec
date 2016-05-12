@@ -20,4 +20,7 @@ public class Token {
 
     private String accessTokenSecret;
 
+    private String oauthToken;
+
+    private String oauthTokenVerifier;
 }

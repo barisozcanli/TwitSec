@@ -24,4 +24,8 @@ public class CreateUserRequest {
 
 	private String accessTokenSecret;
 
+	private String oauthToken;
+
+	private String oauthTokenVerifier;
+
 }

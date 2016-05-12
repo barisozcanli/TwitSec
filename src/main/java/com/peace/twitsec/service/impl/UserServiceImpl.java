@@ -46,6 +46,11 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 	}
 
 	@Override
+	public User findByOauthToken(String oauthToken, String verifier) {
+		return userRepository.findByOauthToken(oauthToken, verifier);
+	}
+
+	@Override
 	public User createUser(CreateUserRequest request) {
 
 		User user = userRepository.findByUsername(request.getUsername());
@@ -74,6 +79,8 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		Token token = new Token();
 		token.setAccessToken(request.getAccessToken());
 		token.setAccessTokenSecret(request.getAccessTokenSecret());
+		token.setOauthToken(request.getOauthToken());
+		token.setOauthTokenVerifier(request.getOauthTokenVerifier());
 		newUser.setToken(token);
 
 		user = userRepository.save(newUser);
@@ -114,6 +121,8 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 			createUserRequest.setUsername(response.getUsername());
 			createUserRequest.setAccessToken(response.getAccessToken());
 			createUserRequest.setAccessTokenSecret(response.getAccessTokenSecret());
+			createUserRequest.setOauthToken(request.getOauthToken());
+			createUserRequest.setOauthTokenVerifier(request.getVerifier());
 
 			user = createUser(createUserRequest);
 		} else {

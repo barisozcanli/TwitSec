@@ -9,6 +9,8 @@ public interface UserService {
 
     User findById(String id);
 
+    User findByOauthToken(String oauthToken, String verifier);
+
     User createUser(CreateUserRequest request);
 
     LoginResponse authenticate(AuthenticationRequest request);

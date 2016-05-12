@@ -45,6 +45,8 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 	@Autowired AuthTokenService authTokenService;
 
+	@Autowired UserService userService;
+
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	public OauthURLResponse getOauthURL() {
@@ -81,37 +83,45 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 
 	public OauthConsumerResponse getConsumerSecret(TwitterAuthenticationRequest request) throws Exception {
 
-		AuthToken authToken = authTokenService.getAuthToken(request.getOauthToken());
-
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-
-		cb.setDebugEnabled(true)
-				.setOAuthConsumerKey(consumerKey)
-				.setOAuthConsumerSecret(consumerSecret);
-
-		AccessToken accessToken;
-		Twitter twitter;
-		try {
-			TwitterFactory tf = new TwitterFactory(cb.build());
-			twitter = tf.getInstance();
-
-			RequestToken requestToken = new RequestToken(authToken.getToken(), authToken.getTokenSecret());
-
-			accessToken = twitter.getOAuthAccessToken(requestToken, request.getVerifier());
-
-			System.out.println("Access token: " + accessToken.getToken());
-			System.out.println("Access token secret: " + accessToken.getTokenSecret());
-			System.out.println("USERNAME: " + twitter.getScreenName());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
-
+		User user = userService.findByOauthToken(request.getOauthToken(), request.getVerifier());
 		OauthConsumerResponse response = new OauthConsumerResponse();
-		response.setAccessToken(accessToken.getToken());
-		response.setAccessTokenSecret(accessToken.getTokenSecret());
-		response.setUsername(twitter.getScreenName());
+
+		if (user == null) {
+			AuthToken authToken = authTokenService.getAuthToken(request.getOauthToken());
+
+			ConfigurationBuilder cb = new ConfigurationBuilder();
+
+			cb.setDebugEnabled(true)
+					.setOAuthConsumerKey(consumerKey)
+					.setOAuthConsumerSecret(consumerSecret);
+
+			AccessToken accessToken;
+			Twitter twitter;
+			try {
+				TwitterFactory tf = new TwitterFactory(cb.build());
+				twitter = tf.getInstance();
+
+				RequestToken requestToken = new RequestToken(authToken.getToken(), authToken.getTokenSecret());
+
+				accessToken = twitter.getOAuthAccessToken(requestToken, request.getVerifier());
+
+				System.out.println("Access token: " + accessToken.getToken());
+				System.out.println("Access token secret: " + accessToken.getTokenSecret());
+				System.out.println("USERNAME: " + twitter.getScreenName());
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				throw e;
+			}
+
+			response.setAccessToken(accessToken.getToken());
+			response.setAccessTokenSecret(accessToken.getTokenSecret());
+			response.setUsername(twitter.getScreenName());
+		} else {
+			response.setAccessToken(user.getToken().getAccessToken());
+			response.setAccessTokenSecret(user.getToken().getAccessTokenSecret());
+			response.setUsername(user.getUsername());
+		}
 
 		return response;
 	}

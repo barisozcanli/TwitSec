@@ -11,6 +11,8 @@ public interface UserRepositoryCustom {
     User findByUsernameAndPassword(String username, String password);
     
     User findByUsername(String username);
+
+    User findByOauthToken(String oauthToken, String verifier);
     
     User findByOneTimeToken(String oneTimeToken);
     
