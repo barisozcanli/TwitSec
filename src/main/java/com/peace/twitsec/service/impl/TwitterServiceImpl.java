@@ -214,6 +214,7 @@ public class TwitterServiceImpl extends TwitSecService implements TwitterService
 				twitterUserList.add(twitterUser);
 			}
 		} catch (TwitterException e) {
+			System.out.print("couldn't lookup users for user " + user.getUsername());
 			e.printStackTrace();
 		}
 
