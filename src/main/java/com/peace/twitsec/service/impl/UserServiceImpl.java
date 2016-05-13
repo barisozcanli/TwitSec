@@ -79,8 +79,6 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 		Token token = new Token();
 		token.setAccessToken(request.getAccessToken());
 		token.setAccessTokenSecret(request.getAccessTokenSecret());
-		token.setOauthToken(request.getOauthToken());
-		token.setOauthTokenVerifier(request.getOauthTokenVerifier());
 		newUser.setToken(token);
 
 		user = userRepository.save(newUser);
@@ -121,18 +119,16 @@ public class UserServiceImpl extends TwitSecService implements UserService {
 			createUserRequest.setUsername(response.getUsername());
 			createUserRequest.setAccessToken(response.getAccessToken());
 			createUserRequest.setAccessTokenSecret(response.getAccessTokenSecret());
-			createUserRequest.setOauthToken(request.getOauthToken());
-			createUserRequest.setOauthTokenVerifier(request.getVerifier());
 
 			user = createUser(createUserRequest);
 		} else {
 			Token token = new Token();
-			token.setAccessToken(request.getOauthToken());
-			token.setAccessTokenSecret(request.getVerifier());
+			token.setAccessToken(response.getAccessToken());
+			token.setAccessTokenSecret(response.getAccessTokenSecret());
 
 			user.setToken(token);
 
-			//userRepository.save(user);
+			userRepository.save(user);
 		}
 
 		loginResponse.setToken(KeyUtils.currentTimeUUID().toString());
