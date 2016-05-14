@@ -103,7 +103,9 @@ public class SchedulerServiceImpl extends TwitSecService implements SchedulerSer
 			}
 
 			if(user.getPreferences().isSendAutoMessageToNewFollower() && !hasPatternsMatched) {
-				twitterService.sendDirectMessage(user, twitterProfile, user.getPreferences().getNewFollowerAutoMessageContent());
+				if (twitterProfile.getFollowersCount() >= user.getPreferences().getLeftFollowerFollowerCount()) {
+					twitterService.sendDirectMessage(user, twitterProfile, user.getPreferences().getNewFollowerAutoMessageContent());
+				}
 			}
 
 			TwitterUser myTwitterUser = TwitterUtil.extractTwitterUser(twitterProfile);
