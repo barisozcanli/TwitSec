@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public class BlockReportRepositoryImpl implements BlockReportRepositoryCustom {
@@ -26,6 +27,17 @@ public class BlockReportRepositoryImpl implements BlockReportRepositoryCustom {
 		query.limit(limit);
 		query.with(new Sort(Sort.Direction.DESC, "createdAt"));
 		query.addCriteria(Criteria.where("user.$id").is(new ObjectId(userId)));
+		return mongoTemplate.find(query, BlockReport.class);
+	}
+
+	@Override
+	public List<BlockReport> findLatestBlockReportsByDay(String userId, int day) {
+		Date date = new Date();
+		date.setDate(date.getDate()-day);
+
+		Query query = new Query();
+		query.with(new Sort(Sort.Direction.DESC, "createdAt"));
+		query.addCriteria(Criteria.where("user.$id").is(new ObjectId(userId)).and("createdAt").gt(date));
 		return mongoTemplate.find(query, BlockReport.class);
 	}
 }

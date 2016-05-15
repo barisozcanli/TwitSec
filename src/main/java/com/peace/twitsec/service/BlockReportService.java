@@ -14,4 +14,6 @@ public interface BlockReportService {
 
     List<BlockReport> getBlockReportsOfUser(User user, Integer limit);
 
+    List<BlockReport> getBlockReportsOfUserByDay(User user, Integer limit);
+
 }

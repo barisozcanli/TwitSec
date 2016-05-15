@@ -11,4 +11,6 @@ public interface FollowerReportService {
     List<FollowerReport> createFollowerReports(List<FollowerReport> followerReportList);
 
     List<FollowerReport> getFollowerReportsOfUser(User user, FollowAction followAction, Integer limit);
+
+    List<FollowerReport> getFollowerReportsOfUserByDay(User user, FollowAction followAction, Integer limit);
 }

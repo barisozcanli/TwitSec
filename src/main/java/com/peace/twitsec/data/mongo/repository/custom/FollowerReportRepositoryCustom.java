@@ -7,4 +7,6 @@ import java.util.List;
 public interface FollowerReportRepositoryCustom {
 
     List<FollowerReport> findLatestFollowerReports(String userId, FollowAction followAction, int limit);
+
+    List<FollowerReport> findLatestFollowerReportsByDay(String userId, FollowAction followAction, int day);
 }

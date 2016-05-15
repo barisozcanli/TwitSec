@@ -128,6 +128,16 @@ public class UserController {
         return blockReportService.getBlockReportsOfUser(authenticatedUser, request.getLimit());
     }
 
+    @ApiOperation(value="Get Blocked Users By Day")
+    @RequestMapping(value="/user/getBlockedUsersByDay", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody
+    List<BlockReport> getBlockedUsersByDay(@RequestBody GetBlockReportRequest request) {
+
+        User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+        return blockReportService.getBlockReportsOfUser(authenticatedUser, request.getLimit());
+    }
+
     @ApiOperation(value="Get Follower Reports")
     @RequestMapping(value="/user/getFollowerReports", method = RequestMethod.POST)
     @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -136,5 +146,15 @@ public class UserController {
 
         User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
         return followerReportService.getFollowerReportsOfUser(authenticatedUser, request.getFollowAction(), request.getLimit());
+    }
+
+    @ApiOperation(value="Get Follower Reports By Day")
+    @RequestMapping(value="/user/getFollowerReportsByDay", method = RequestMethod.POST)
+    @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
+    public @ResponseBody
+    List<FollowerReport> getFollowerReportsByDay(@RequestBody GetFollowerReportRequest request) {
+
+        User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
+        return followerReportService.getFollowerReportsOfUserByDay(authenticatedUser, request.getFollowAction(), request.getLimit());
     }
 }

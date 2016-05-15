@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public class FollowerReportRepositoryImpl implements FollowerReportRepositoryCustom {
@@ -27,6 +28,18 @@ public class FollowerReportRepositoryImpl implements FollowerReportRepositoryCus
 		query.limit(limit);
 		query.with(new Sort(Sort.Direction.DESC, "createdAt"));
 		query.addCriteria(Criteria.where("followAction").is(followAction).and("user.$id").is(new ObjectId(userId)));
+		return mongoTemplate.find(query, FollowerReport.class);
+	}
+
+	@Override
+	public List<FollowerReport> findLatestFollowerReportsByDay(String userId, FollowAction followAction, int day) {
+
+		Date date = new Date();
+		date.setDate(date.getDate()-day);
+
+		Query query = new Query();
+		query.with(new Sort(Sort.Direction.DESC, "createdAt"));
+		query.addCriteria(Criteria.where("followAction").is(followAction).and("user.$id").is(new ObjectId(userId)).and("createdAt").gt(date));
 		return mongoTemplate.find(query, FollowerReport.class);
 	}
 }

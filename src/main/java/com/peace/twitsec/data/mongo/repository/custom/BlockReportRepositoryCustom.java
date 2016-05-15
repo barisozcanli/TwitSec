@@ -7,4 +7,6 @@ import java.util.List;
 public interface BlockReportRepositoryCustom {
 
     List<BlockReport> findLatestBlockReports(String userId, int limit);
+
+    List<BlockReport> findLatestBlockReportsByDay(String userId, int day);
 }
