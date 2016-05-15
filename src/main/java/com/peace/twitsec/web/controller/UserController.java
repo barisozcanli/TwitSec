@@ -122,10 +122,10 @@ public class UserController {
          @RequestMapping(value="/user/getBlockedUsers", method = RequestMethod.POST)
          @ApiResponses(value={@ApiResponse(code=200, message = "Success"), @ApiResponse(code = 500, message = "Internal Server Error")})
          public @ResponseBody
-         List<BlockReport> getBlockedUsers(@RequestBody BaseRequest request) {
+         List<BlockReport> getBlockedUsers(@RequestBody GetBlockReportRequest request) {
 
         User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
-        return blockReportService.getBlockReportsOfUser(authenticatedUser);
+        return blockReportService.getBlockReportsOfUser(authenticatedUser, request.getLimit());
     }
 
     @ApiOperation(value="Get Follower Reports")

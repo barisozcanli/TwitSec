@@ -30,4 +30,9 @@ public class BlockReportServiceImpl extends TwitSecService implements BlockRepor
 		return blockReportRepository.findByUser(user);
 
 	}
+
+	@Override
+	public List<BlockReport> getBlockReportsOfUser(User user, Integer limit) {
+		return blockReportRepository.findLatestBlockReports(user.getId(), limit);
+	}
 }
