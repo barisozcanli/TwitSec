@@ -135,7 +135,7 @@ public class UserController {
     List<BlockReport> getBlockedUsersByDay(@RequestBody GetBlockReportRequest request) {
 
         User authenticatedUser = TwitSecSession.getInstance().getUser(request.getAuthToken());
-        return blockReportService.getBlockReportsOfUser(authenticatedUser, request.getLimit());
+        return blockReportService.getBlockReportsOfUserByDay(authenticatedUser, request.getLimit());
     }
 
     @ApiOperation(value="Get Follower Reports")
