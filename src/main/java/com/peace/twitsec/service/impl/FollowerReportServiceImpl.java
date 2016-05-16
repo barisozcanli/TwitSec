@@ -32,7 +32,7 @@ public class FollowerReportServiceImpl extends TwitSecService implements Followe
 	}
 
 	public List<FollowerReport> getFollowerReportsOfUserByDay(User user, FollowAction followAction, Integer limit) {
-		return followerReportRepository.findLatestFollowerReports(user.getId(), followAction, limit);
+		return followerReportRepository.findLatestFollowerReportsByDay(user.getId(), followAction, limit);
 
 	}
 }
